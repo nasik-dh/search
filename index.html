@@ -102,7 +102,8 @@
         }
 
         /* Cards for results */
-        #results, #additionalResults {
+        #results,
+        #additionalResults {
             display: flex;
             flex-wrap: wrap; /* Allow results to wrap */
             justify-content: center; /* Center align results */
@@ -110,7 +111,8 @@
             margin-top: 20px;
         }
 
-        .result-item, .additional-result-item {
+        .result-item,
+        .additional-result-item {
             background: rgba(255, 255, 255, 0.2);
             border-radius: 15px;
             padding: 20px;
@@ -122,19 +124,22 @@
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .result-item:hover, .additional-result-item:hover {
+        .result-item:hover,
+        .additional-result-item:hover {
             transform: translateY(-2px);
             box-shadow: 0 0 30px rgba(0, 123, 255, 1);
         }
 
-        .result-name, .additional-result-name {
+        .result-name,
+        .additional-result-name {
             font-size: 1.5em;
             font-weight: bold;
             color: #000000; /* Color for name */
             margin-bottom: 10px;
         }
 
-        .result-details, .additional-result-details {
+        .result-details,
+        .additional-result-details {
             color: white;
             text-align: left;
             margin: 5px 0;
@@ -150,7 +155,7 @@
     </div>
 
     <div class="container">
-        <h1>QUAF-LIBRARY</h1>
+        <h1 id="libraryTitle">QUAF-LIBRARY</h1>
         <div id="loginForm" style="display: none;">
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password">
@@ -165,7 +170,7 @@
         </div>
 
         <div id="additionalSearch" style="display: none; margin-top: 20px;">
-            <h2>Search for Other Contents</h2>
+            <h2>WINGS POINTS</h2>
             <input type="text" id="additionalSearchBox" placeholder="Enter wing or points...">
             <button id="additionalSearchButton">Search</button>
             <div id="additionalResults"></div> <!-- Container for additional search results -->
@@ -173,10 +178,14 @@
     </div>
 
     <script>
-        // URL of the published Google Sheets CSV
-        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRjeadWcSnQEtjxlrIJc1OZ6nbuuKEzbUwn7kZtWIhm3zJ2a8AjNAUp8j8o01OOlwoc5y9Bl0_qg8pr/pub?output=csv';
-        
+        // URL of the published Google Sheets CSV for books
+        const booksSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRjeadWcSnQEtjxlrIJc1OZ6nbuuKEzbUwn7kZtWIhm3zJ2a8AjNAUp8j8o01OOlwoc5y9Bl0_qg8pr/pub?output=csv';
+
+        // URL of the published Google Sheets CSV for points
+        const pointsSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTPiOQ0DNaDMUqPWqgzO0sZ10AL0hyaHSwiDCVbYcneZct33A0FizLWS8LOf4SbEbKNBGxlsxoZJKAY/pub?gid=0&single=true&output=csv';
+
         let books = [];
+        let pointsData = [];
 
         function showLogin() {
             document.getElementById('loginForm').style.display = 'block'; // Show login form
@@ -191,9 +200,11 @@
 
             if (username === "quaf" && password === "result") {
                 loginError.style.display = 'none';
+                document.getElementById('libraryTitle').style.display = 'none'; // Hide title on login
                 document.getElementById('mainContent').style.display = 'none'; // Hide book search
                 document.getElementById('loginForm').style.display = 'none'; // Hide login form
                 document.getElementById('additionalSearch').style.display = 'block'; // Show additional search
+                loadPoints(); // Load points data after successful login
             } else {
                 loginError.textContent = 'Rejected'; // Show error message
                 loginError.style.display = 'block';
@@ -202,13 +213,25 @@
 
         // Function to load books from Google Sheets
         async function loadBooks() {
-            const response = await fetch(sheetUrl);
+            const response = await fetch(booksSheetUrl);
             const data = await response.text();
             const rows = data.split('\n').slice(1); // Remove header row
 
             books = rows.map(row => {
                 const [bookName, author, language, no] = row.split(',');
                 return { bookName, author, language, no };
+            });
+        }
+
+        // Function to load points from the CSV link
+        async function loadPoints() {
+            const response = await fetch(pointsSheetUrl);
+            const data = await response.text();
+            const rows = data.split('\n').slice(1); // Remove header row
+
+            pointsData = rows.map(row => {
+                const [wing, points] = row.split(',');
+                return { wing, points: parseInt(points, 10) }; // Convert points to integer
             });
         }
 
@@ -219,7 +242,7 @@
             resultsDiv.innerHTML = ''; // Clear previous results
 
             // Filter books based on search input
-            const results = books.filter(book => 
+            const results = books.filter(book =>
                 book.bookName.toLowerCase().includes(query)
             );
 
@@ -246,15 +269,8 @@
             const additionalResultsDiv = document.getElementById('additionalResults');
             additionalResultsDiv.innerHTML = ''; // Clear previous results
 
-            // Placeholder example: in reality, you would replace this with your logic to search for wings and points
-            const additionalData = [
-                { wing: 'Wing 1', points: 100 },
-                { wing: 'Wing 2', points: 150 },
-                // You can add more data here or fetch from your source
-            ];
-
-            const results = additionalData.filter(item => 
-                item.wing.toLowerCase().includes(query) || 
+            const results = pointsData.filter(item =>
+                item.wing.toLowerCase().includes(query) ||
                 item.points.toString().includes(query)
             );
 
