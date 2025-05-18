@@ -13,10 +13,12 @@
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow-x: hidden; /* Prevent horizontal scroll */
-            background: linear-gradient(135deg, #ff0055, #00c5ff);
-            animation: gradient 15s ease infinite;
+            background: linear-gradient(135deg, #1e3c72, #2a5298); /* Dark gradient background */
             height: 100vh;
             color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center-align for better layout */
         }
 
         h1 {
@@ -29,13 +31,13 @@
             justify-content: space-around;
             align-items: center;
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.15);
+            background-color: rgba(255, 255, 255, 0.1);
             z-index: 3;
             position: relative;
             backdrop-filter: blur(10px);
+            width: 100%; /* Full width navbar */
         }
 
-        /* Navigation links styling */
         .navbar a {
             color: white;
             text-decoration: none;
@@ -50,10 +52,10 @@
         }
 
         .container {
-            position: relative;
             z-index: 2;
             text-align: center;
-            padding-top: 20vh;
+            padding: 20px;
+            width: 100%;
         }
 
         input[type="text"] {
@@ -65,6 +67,8 @@
             font-size: 16px;
             outline: none;
             transition: 0.3s;
+            background-color: rgba(255, 255, 255, 0.1); /* Light background for input */
+            color: white; /* Text color */
         }
 
         input[type="text"]:focus {
@@ -89,11 +93,11 @@
         }
 
         #results {
-            margin-top: 20px;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex-wrap: wrap; /* Allow results to wrap */
+            justify-content: center; /* Center align results */
             width: 100%; /* Ensure consistency */
+            margin-top: 20px; /* Margins for spacing */
         }
 
         .result-item {
@@ -101,8 +105,8 @@
             border-radius: 15px;
             padding: 20px;
             margin: 15px;
-            width: 350px; /* Adjusted width for better presentation */
-            height: auto; /* Allow height to adjust based on content */
+            width: 300px; /* Set fixed width for cards */
+            height: auto; /* Height adjusts based on content */
             box-shadow: 0 0 20px rgba(0, 123, 255, 0.7); /* Glowing border */
             transition: transform 0.3s, box-shadow 0.3s;
             position: relative;
@@ -111,8 +115,8 @@
         .result-item img {
             width: 120px; /* Image size */
             height: 120px; /* Image size */
-            border-radius: 50%;
-            border: 3px solid #007bff; /* Blue border around the image */
+            border-radius: 50%; /* Circular image */
+            border: 3px solid #007bff; /* Blue border around image */
             margin-bottom: 10px;
         }
 
@@ -142,7 +146,7 @@
         }
 
         .result-item:hover {
-            transform: translateY(-5px);
+            transform: translateY(-2px);
             box-shadow: 0 0 30px rgba(0, 123, 255, 1); /* More intense glowing on hover */
         }
 
@@ -164,20 +168,21 @@
         <a href="#home">Home</a>
         <a href="#results">Results</a>
         <a href="#details">Details</a>
+        <a href="admin.html">Admin</a> <!-- Added Admin link -->
     </div>
     <div class="container">
         <h1>Student Search</h1>
         <input type="text" id="searchBox" placeholder="Enter student name...">
         <button id="searchButton">Search</button>
-        <div id="results"></div>
+        <div id="results"></div> <!-- Container for search results -->
     </div>
 
     <script>
         const students = [
             {
-                name: '16552',
-                detail: 'MUHAMMED NASIK KV',
-                image: 'https://dqdhdc.netlify.app/pic/569.png'
+                name: 'John Doe',
+                detail: 'Grade 12, A+ Student',
+                image: 'https://via.placeholder.com/120' // Placeholder image
             },
             {
                 name: 'Jane Smith',
@@ -207,36 +212,34 @@
             // You can add more student objects as needed
         ];
 
+        // Search button event listener
         document.getElementById('searchButton').addEventListener('click', () => {
             const query = document.getElementById('searchBox').value.trim().toLowerCase();
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = ''; // Clear previous results
 
-            // Display results only if search query has at least one character
-            if (query.length > 0) {
-                // Filter results based on whether names start with the query or exactly match it
-                const results = students.filter(student => 
-                    student.name.toLowerCase().startsWith(query) || 
-                    student.name.toLowerCase() === query
-                );
+            // Display results based on search input
+            const results = students.filter(student => 
+                student.name.toLowerCase().startsWith(query) ||
+                student.name.toLowerCase() === query
+            );
 
-                if (results.length > 0) {
-                    results.forEach(student => {
-                        const div = document.createElement('div');
-                        div.className = 'result-item';
-                        div.innerHTML = `
-                            <img src="${student.image}" alt="${student.name}">
-                            <div class="result-name">${student.name}</div>
-                            <div class="result-details">${student.detail}</div>
-                            <div class="download-icon" onclick="downloadCard('${student.name}', '${student.image}', '${student.detail}')">
-                                <img src="https://img.icons8.com/?size=100&id=108642&format=png&color=000000" alt="Download">
-                            </div>
-                        `;
-                        resultsDiv.appendChild(div);
-                    });
-                } else {
-                    resultsDiv.textContent = 'No results found';
-                }
+            if (results.length > 0) {
+                results.forEach(student => {
+                    const div = document.createElement('div');
+                    div.className = 'result-item';
+                    div.innerHTML = `
+                        <img src="${student.image}" alt="${student.name}">
+                        <div class="result-name">${student.name}</div>
+                        <div class="result-details">${student.detail}</div>
+                        <div class="download-icon" onclick="downloadCard('${student.name}', '${student.image}', '${student.detail}')">
+                            <img src="https://img.icons8.com/?size=100&id=108642&format=png&color=000000" alt="Download">
+                        </div>
+                    `;
+                    resultsDiv.appendChild(div);
+                });
+            } else {
+                resultsDiv.textContent = 'No results matched.';
             }
         });
 
