@@ -168,16 +168,41 @@
 
         <div id="formSection" class="form-section">
             <h2>Add Student</h2>
-            <input type="url" id="photo" placeholder="Enter photo URL">
-            <input type="text" id="studentName" placeholder="Student Name">
-            <input type="text" id="studentDetails" placeholder="Student Details">
+            <input type="url" id="photo" placeholder="Enter photo URL" required>
+            <input type="text" id="studentName" placeholder="Student Name" required>
+            <input type="text" id="studentDetails" placeholder="Student Details" required>
             <button id="submitButton">Submit</button>
         </div>
     </div>
 
     <script>
-        // Store students in an array
-        const students = [];
+        // Store students in an array or retrieve them from localStorage
+        let students = JSON.parse(localStorage.getItem('students')) || [];
+
+        // Function to display students
+        function displayStudents() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = ''; // Clear previous results
+
+            if (students.length > 0) {
+                students.forEach(student => {
+                    const div = document.createElement('div');
+                    div.className = 'result-item';
+                    div.innerHTML = `
+                        <img src="${student.photo}" alt="${student.name}">
+                        <div class="result-name">${student.name}</div>
+                        <div class="result-details">${student.details}</div>
+                        <button class="download-button" onclick="downloadCard('${student.photo}', '${student.name}', '${student.details}')">DOWNLOAD</button>
+                    `;
+                    resultsDiv.appendChild(div);
+                });
+            } else {
+                resultsDiv.innerHTML = 'No students found.';
+            }
+        }
+
+        // Call displayStudents on page load
+        window.onload = displayStudents;
 
         // Function to switch sections
         function showSection(sectionId) {
@@ -214,7 +239,7 @@
             }
         });
 
-        // Handle form submission
+        // Handle form submission with localStorage
         document.getElementById('submitButton').addEventListener('click', () => {
             const photo = document.getElementById('photo').value;
             const name = document.getElementById('studentName').value;
@@ -223,12 +248,16 @@
             // Save student data to the array
             students.push({ photo, name, details });
 
+            // Save to localStorage
+            localStorage.setItem('students', JSON.stringify(students));
+
             // Clear the input fields
             document.getElementById('photo').value = '';
             document.getElementById('studentName').value = '';
             document.getElementById('studentDetails').value = '';
 
-            // Optionally, confirm submission
+            // Display updated students
+            displayStudents();
             alert('Student added successfully!');
         });
 
@@ -293,7 +322,6 @@
                 link.click(); // Trigger download
             };
         }
-
     </script>
 </body>
 
