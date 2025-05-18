@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Search Engine</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            background: linear-gradient(135deg, #ff0055, #00c5ff);
+            animation: gradient 15s ease infinite;
+            height: 100vh;
+            color: white;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.15);
+            z-index: 3;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Navigation links styling */
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .navbar a:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding-top: 20vh;
+        }
+
+        input[type="text"] {
+            padding: 15px;
+            width: 300px;
+            border: none;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus {
+            width: 320px;
+        }
+
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            background-color: #ff0055;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background-color: #e6004d;
+            transform: translateY(-2px);
+        }
+
+        #results {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%; /* Ensure consistency */
+        }
+
+        .result-item {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px;
+            width: 350px; /* Adjusted width for better presentation */
+            height: auto; /* Allow height to adjust based on content */
+            box-shadow: 0 0 20px rgba(0, 123, 255, 0.7); /* Glowing border */
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .result-item img {
+            width: 120px; /* Image size */
+            height: 120px; /* Image size */
+            border-radius: 50%;
+            border: 3px solid #007bff; /* Blue border around the image */
+            margin-bottom: 10px;
+        }
+
+        .result-name {
+            font-size: 1.5em;
+            background: linear-gradient(270deg, #ff00cc, #3333ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-text 5s ease infinite; /* Gradient animation */
+            margin-bottom: 5px;
+        }
+
+        .result-details {
+            color: black; /* Black color for details */
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .download-icon {
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .download-icon img {
+            width: 35px; /* Icon size */
+            height: 35px; /* Icon size */
+        }
+
+        .result-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(0, 123, 255, 1); /* More intense glowing on hover */
+        }
+
+        @keyframes gradient-text {
+            0% { background-position: 0%; }
+            50% { background-position: 100%; }
+            100% { background-position: 0%; }
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0%; }
+            50% { background-position: 100%; }
+            100% { background-position: 0%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="#home">Home</a>
+        <a href="#results">Results</a>
+        <a href="#details">Details</a>
+    </div>
+    <div class="container">
+        <h1>Student Search</h1>
+        <input type="text" id="searchBox" placeholder="Enter student name...">
+        <button id="searchButton">Search</button>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const students = [
+            {
+                name: '16552',
+                detail: 'MUHAMMED NASIK KV',
+                image: 'https://dqdhdc.netlify.app/pic/569.png'
+            },
+            {
+                name: 'Jane Smith',
+                detail: 'Grade 11, B Student',
+                image: 'https://via.placeholder.com/120'
+            },
+            {
+                name: 'Alice Johnson',
+                detail: 'Grade 10, A Student',
+                image: 'https://via.placeholder.com/120'
+            },
+            {
+                name: 'Bob Brown',
+                detail: 'Grade 12, C Student',
+                image: 'https://via.placeholder.com/120'
+            },
+            {
+                name: 'Charlie Green',
+                detail: 'Grade 11, A Student',
+                image: 'https://via.placeholder.com/120'
+            },
+            {
+                name: 'Dave Wilson',
+                detail: 'Grade 10, B+ Student',
+                image: 'https://via.placeholder.com/120'
+            },
+            // You can add more student objects as needed
+        ];
+
+        document.getElementById('searchButton').addEventListener('click', () => {
+            const query = document.getElementById('searchBox').value.trim().toLowerCase();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = ''; // Clear previous results
+
+            // Display results only if search query has at least one character
+            if (query.length > 0) {
+                // Filter results based on whether names start with the query or exactly match it
+                const results = students.filter(student => 
+                    student.name.toLowerCase().startsWith(query) || 
+                    student.name.toLowerCase() === query
+                );
+
+                if (results.length > 0) {
+                    results.forEach(student => {
+                        const div = document.createElement('div');
+                        div.className = 'result-item';
+                        div.innerHTML = `
+                            <img src="${student.image}" alt="${student.name}">
+                            <div class="result-name">${student.name}</div>
+                            <div class="result-details">${student.detail}</div>
+                            <div class="download-icon" onclick="downloadCard('${student.name}', '${student.image}', '${student.detail}')">
+                                <img src="https://img.icons8.com/?size=100&id=108642&format=png&color=000000" alt="Download">
+                            </div>
+                        `;
+                        resultsDiv.appendChild(div);
+                    });
+                } else {
+                    resultsDiv.textContent = 'No results found';
+                }
+            }
+        });
+
+        function downloadCard(name, imageSrc, details) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 400;  // Card width
+            canvas.height = 300; // Card height
+
+            // Draw the card background
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#007bff'; // Blue border
+            ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4); // Border rectangle
+
+            // Draw the image
+            const img = new Image();
+            img.src = imageSrc;
+            img.onload = () => {
+                ctx.drawImage(img, 20, 20, 120, 120); // Image position and sizing
+
+                // Set the font for name and details
+                ctx.fillStyle = 'black';
+                ctx.font = '20px Segoe UI';
+                ctx.fillText(name, 160, 70); // Name position
+
+                ctx.font = '16px Segoe UI';
+                ctx.fillText(details, 160, 110); // Details position
+
+                // Create a download link
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = `${name}.png`; // Set filename as name.png
+                link.click(); // Trigger download
+            };
+        }
+    </script>
+</body>
+</html>
