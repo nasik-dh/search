@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QUAF-DATA</title>
+    <title>QUAF-LIBRARY</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,20 +13,23 @@
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden; /* Prevent horizontal scroll */
-            background: linear-gradient(135deg, #1e3c72, #2a5298); /* Dark gradient background */
+            overflow-x: hidden;
+            /* Prevent horizontal scroll */
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            /* Dark gradient background */
             height: 100vh;
             color: white;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Center-align for better layout */
+            align-items: center;
+            /* Center-align for better layout */
         }
 
         h1 {
             margin-bottom: 20px;
         }
 
-        /* Navigation Bar */
+         /* Navigation Bar */
         .navbar {
             display: flex;
             justify-content: space-around;
@@ -51,6 +55,7 @@
             transform: translateY(-2px);
         }
 
+
         .container {
             z-index: 2;
             text-align: center;
@@ -67,8 +72,9 @@
             font-size: 16px;
             outline: none;
             transition: 0.3s;
-            background-color: rgba(255, 255, 255, 0.1); /* Light background for input */
-            color: white; /* Text color */
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            /* Text color */
         }
 
         input[type="text"]:focus {
@@ -85,7 +91,7 @@
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             transition: background-color 0.3s, transform 0.3s;
-            margin-top: 10px; /* Added margin for spacing between search box and button */
+            margin-top: 10px;
         }
 
         button:hover {
@@ -95,10 +101,12 @@
 
         #results {
             display: flex;
-            flex-wrap: wrap; /* Allow results to wrap */
-            justify-content: center; /* Center align results */
-            width: 100%; /* Ensure consistency */
-            margin-top: 20px; /* Margins for spacing */
+            flex-wrap: wrap;
+            /* Allow results to wrap */
+            justify-content: center;
+            /* Center align results */
+            width: 100%;
+            margin-top: 20px;
         }
 
         .result-item {
@@ -106,64 +114,34 @@
             border-radius: 15px;
             padding: 20px;
             margin: 15px;
-            width: 300px; /* Set fixed width for cards */
-            height: auto; /* Height adjusts based on content */
-            box-shadow: 0 0 20px rgba(0, 123, 255, 0.7); /* Glowing border */
-            transition: transform 0.3s, box-shadow 0.3s;
+            width: 300px;
+            height: auto;
+            box-shadow: 0 0 20px rgba(0, 123, 255, 0.7);
             position: relative;
-        }
-
-        .result-item img {
-            width: 120px; /* Image size */
-            height: 120px; /* Image size */
-            border-radius: 50%; /* Circular image */
-            border: 3px solid #007bff; /* Blue border around image */
-            margin-bottom: 10px;
-        }
-
-        .result-name {
-            font-size: 1.5em;
-            background: linear-gradient(270deg, #ff00cc, #3333ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradient-text 5s ease infinite; /* Gradient animation */
-            margin-bottom: 5px;
-        }
-
-        .result-details {
-            color: black; /* Black color for details */
-            text-align: center;
-            margin: 10px 0;
-        }
-
-        .download-icon {
-            margin-top: 10px;
-            cursor: pointer;
-        }
-
-        .download-icon img {
-            width: 35px; /* Icon size */
-            height: 35px; /* Icon size */
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .result-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 0 30px rgba(0, 123, 255, 1); /* More intense glowing on hover */
+            box-shadow: 0 0 30px rgba(0, 123, 255, 1);
         }
 
-        @keyframes gradient-text {
-            0% { background-position: 0%; }
-            50% { background-position: 100%; }
-            100% { background-position: 0%; }
+        .result-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #000000;
+            /* Color for book name */
+            margin-bottom: 10px;
         }
 
-        @keyframes gradient {
-            0% { background-position: 0%; }
-            50% { background-position: 100%; }
-            100% { background-position: 0%; }
+        .result-details {
+            color: white;
+            text-align: left;
+            margin: 5px 0;
         }
     </style>
 </head>
+
 <body>
     <div class="navbar">
         <a href="index.html">Home</a>
@@ -173,48 +151,48 @@
         <h1>QUAF-LIBRARY</h1>
         <input type="text" id="searchBox" placeholder="Enter book name...">
         <button id="searchButton">Search</button>
-        <div id="results"></div> <!-- Container for search results -->
+        <div id="results"></div>
+        <!-- Container for search results -->
     </div>
 
     <script>
-        const students = [
-            {
-                name: '986',
-                detail: 'MUHAMMED YASEEN K',
-                image: 'https://dqdhdc.netlify.app/pic/986.jpg' // Placeholder image
-            },
-            {
-                name: '987',
-                detail: 'MUHAMMED LASIN KC',
-                image: 'https://dqdhdc.netlify.app/pic/987.jpg'
-            },
-            
-            // You can add more student objects as needed
-        ];
+        // URL of the published Google Sheets CSV
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRjeadWcSnQEtjxlrIJc1OZ6nbuuKEzbUwn7kZtWIhm3zJ2a8AjNAUp8j8o01OOlwoc5y9Bl0_qg8pr/pub?output=csv';
+        
+        let books = [];
 
-        // Search button event listener
+        // Function to load books from Google Sheets
+        async function loadBooks() {
+            const response = await fetch(sheetUrl);
+            const data = await response.text();
+            const rows = data.split('\n').slice(1); // Remove header row
+
+            books = rows.map(row => {
+                const [bookName, author, language, no] = row.split(',');
+                return { bookName, author, language, no };
+            });
+        }
+
+        // Event listener for the search button
         document.getElementById('searchButton').addEventListener('click', () => {
             const query = document.getElementById('searchBox').value.trim().toLowerCase();
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = ''; // Clear previous results
 
-            // Display results based on search input
-            const results = students.filter(student => 
-                student.name.toLowerCase().startsWith(query) ||
-                student.name.toLowerCase() === query
+            // Filter books based on search input
+            const results = books.filter(book => 
+                book.bookName.toLowerCase().includes(query)
             );
 
             if (results.length > 0) {
-                results.forEach(student => {
+                results.forEach(book => {
                     const div = document.createElement('div');
                     div.className = 'result-item';
                     div.innerHTML = `
-                        <img src="${student.image}" alt="${student.name}">
-                        <div class="result-name">${student.name}</div>
-                        <div class="result-details">${student.detail}</div>
-                        <div class="download-icon" onclick="downloadCard('${student.name}', '${student.image}', '${student.detail}')">
-                            <img src="https://img.icons8.com/?size=100&id=108642&format=png&color=000000" alt="Download">
-                        </div>
+                        <div class="result-name">${book.bookName}</div>
+                        <div class="result-details">Author: ${book.author}</div>
+                        <div class="result-details">Language: ${book.language}</div>
+                        <div class="result-details">No: ${book.no}</div>
                     `;
                     resultsDiv.appendChild(div);
                 });
@@ -223,39 +201,9 @@
             }
         });
 
-        function downloadCard(name, imageSrc, details) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 400;  // Card width
-            canvas.height = 300; // Card height
-
-            // Draw the card background
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#007bff'; // Blue border
-            ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4); // Border rectangle
-
-            // Draw the image
-            const img = new Image();
-            img.src = imageSrc;
-            img.onload = () => {
-                ctx.drawImage(img, 20, 20, 120, 120); // Image position and sizing
-
-                // Set the font for name and details
-                ctx.fillStyle = 'black';
-                ctx.font = '20px Segoe UI';
-                ctx.fillText(name, 160, 70); // Name position
-
-                ctx.font = '16px Segoe UI';
-                ctx.fillText(details, 160, 110); // Details position
-
-                // Create a download link
-                const link = document.createElement('a');
-                link.href = canvas.toDataURL('image/png');
-                link.download = `${name}.png`; // Set filename as name.png
-                link.click(); // Trigger download
-            };
-        }
+        // Load books on page load
+        window.onload = loadBooks;
     </script>
 </body>
+
 </html>
