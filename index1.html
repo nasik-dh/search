@@ -1,1 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Search and Admin Panel</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            height: 100vh;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            z-index: 3;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .navbar a:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            z-index: 2;
+            text-align: center;
+            padding: 80px 20px;
+            margin-top: 60px;
+        }
+
+        h1 {
+            margin: 20px 0;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="url"] {
+            padding: 15px;
+            width: 300px;
+            border: none;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="url"]:focus {
+            width: 320px;
+        }
+
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            background-color: #ff0055;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            transition: background-color 0.3s, transform 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #e6004d;
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .form-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #results {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px;
+            width: 300px;
+            box-shadow: 0 0 20px rgba(0, 123, 255, 0.7);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .result-item img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid #007bff;
+            margin-bottom: 10px;
+        }
+
+        .download-icon {
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <a href="javascript:void(0);" id="homeLink">Home</a>
+        <a href="javascript:void(0);" id="adminLink">Admin</a>
+    </div>
+
+    <div class="container" id="studentSection">
+        <h1>Student Search</h1>
+        <input type="text" id="searchBox" placeholder="Enter student name...">
+        <button id="searchButton">Search</button>
+        <div id="results"></div>
+    </div>
+
+    <div class="container" id="adminSection" style="display: none;">
+        <h1 id="adminHeader">Admin Sign In</h1>
+        <div id="signInSection">
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button id="signInButton">Sign In</button>
+            <span id="error" class="error-message"></span>
+        </div>
+
+        <div id="formSection" class="form-section">
+            <h2>Add Student</h2>
+            <input type="url" id="photo" placeholder="Enter photo URL">
+            <input type="text" id="studentName" placeholder="Student Name">
+            <input type="text" id="studentDetails" placeholder="Student Details">
+            <button id="submitButton">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        // Store students in an array
+        const students = [];
+
+        // Function to switch sections
+        function showSection(sectionId) {
+            document.getElementById('studentSection').style.display = sectionId === 'studentSection' ? 'block' : 'none';
+            document.getElementById('adminSection').style.display = sectionId === 'adminSection' ? 'block' : 'none';
+        }
+
+        // Show student section by default
+        showSection('studentSection');
+
+        // Navigation buttons
+        document.getElementById('homeLink').addEventListener('click', () => {
+            showSection('studentSection');
+        });
+
+        document.getElementById('adminLink').addEventListener('click', () => {
+            showSection('adminSection');
+        });
+
+        // Sign-in logic
+        document.getElementById('signInButton').addEventListener('click', () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const error = document.getElementById('error');
+
+            // Check credentials
+            if (username === 'quaf-dhdc' && password === 'quafdhdc@2024') {
+                error.textContent = '';
+                document.getElementById('adminHeader').style.display = 'none';
+                document.getElementById('signInSection').style.display = 'none';
+                document.getElementById('formSection').style.display = 'block';
+            } else {
+                error.textContent = 'Rejected';
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('submitButton').addEventListener('click', () => {
+            const photo = document.getElementById('photo').value;
+            const name = document.getElementById('studentName').value;
+            const details = document.getElementById('studentDetails').value;
+
+            // Save student data to the array
+            students.push({ photo, name, details });
+
+            // Clear the input fields
+            document.getElementById('photo').value = '';
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentDetails').value = '';
+
+            // Optionally, confirm submission
+            alert('Student added successfully!');
+        });
+
+        // Search button event listener
+        document.getElementById('searchButton').addEventListener('click', () => {
+            const query = document.getElementById('searchBox').value.trim().toLowerCase();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            // Filter students based on search input
+            const result = students.filter(student => student.name.toLowerCase() === query);
+
+            // Display results
+            if (result.length > 0) {
+                result.forEach(student => {
+                    const div = document.createElement('div');
+                    div.className = 'result-item';
+                    div.innerHTML = `
+                        <img src="${student.photo}" alt="${student.name}">
+                        <div class="result-name">${student.name}</div>
+                        <div class="result-details">${student.details}</div>
+                        <button class="download-button" onclick="downloadCard('${student.photo}', '${student.name}', '${student.details}')">DOWNLOAD</button>
+                    `;
+                    resultsDiv.appendChild(div);
+                });
+            } else {
+                resultsDiv.innerHTML = 'No results matched.';
+            }
+        });
+
+        // Function to download the student card as an image
+        function downloadCard(photo, name, details) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 400;  // Card width
+            canvas.height = 300; // Card height
+
+            // Draw the card background
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#007bff'; // Blue border
+            ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4); // Border rectangle
+
+            // Draw the image
+            const img = new Image();
+            img.src = photo;
+            img.onload = () => {
+                ctx.drawImage(img, 20, 20, 120, 120); // Image position and sizing
+
+                // Set the font for name and details
+                ctx.fillStyle = 'black';
+                ctx.font = '20px Segoe UI';
+                ctx.fillText(name, 160, 70); // Name position
+
+                ctx.font = '16px Segoe UI';
+                ctx.fillText(details, 160, 110); // Details position
+
+                // Create a download link
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = `${name}.png`; // Set filename as name.png
+                link.click(); // Trigger download
+            };
+        }
+
+    </script>
+</body>
+
+</html>
